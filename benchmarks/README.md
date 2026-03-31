@@ -17,7 +17,7 @@ differences between RISC (ARM) and CISC (x86-64) designs.
 
 ## Workloads
 
-| # | Workload | What it tests | Why it matters |
+| # | Workload | What it tests | Why |
 |---|----------|---------------|----------------|
 | 1 | **Matrix Multiplication** (256×256 integers) | Compute intensity, register usage, ILP | Shows how each ISA handles nested loops and multiply-accumulate patterns |
 | 2 | **Array Sum / Memory Sweep** (64 MB) | Memory bandwidth and cache hierarchy | Reveals L1/L2/L3 cache behavior and memory access efficiency |
