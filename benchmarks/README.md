@@ -25,10 +25,7 @@ differences between RISC (ARM) and CISC (x86-64) designs.
 
 ---
 
-## How to Handle the "Different Hardware" Concern
 
-Your M3 and Ryzen 5 are at different price/performance tiers. This is NOT
-a flaw — handle it with these normalized metrics:
 
 ### Raw Metrics (collect these):
 - Wall-clock execution time (seconds)
@@ -45,7 +42,7 @@ a flaw — handle it with these normalized metrics:
 - **Ops per Cycle** = useful operations / cycles — ISA efficiency
 
 These metrics are INDEPENDENT of clock speed and core count, so they
-fairly compare an M3 at 4.05 GHz against a Ryzen 5 at 4.6 GHz.
+fairly compare an M3 at 4.05 GHz against a Ryzen 7 at 4.0 GHz.
 
 ---
 
@@ -97,7 +94,7 @@ sudo powermetrics --samplers cpu_power -i 100 -n 50 &
 kill %1
 ```
 
-### On Linux (Ryzen 5 — x86-64):
+### On Linux (Ryzen 7 — x86-64):
 
 ```bash
 # Assembly benchmarks
@@ -121,7 +118,7 @@ perf stat -r 30 ./matmul_x86
 ## Experimental Protocol
 
 1. **Warm-up**: Run each benchmark 5 times before recording (discard results)
-2. **Repetitions**: 30 measured runs per benchmark per platform
+2. **Repetitions**: 100 measured runs per benchmark per platform
 3. **Environment**: Close all other applications, disable Wi-Fi/Bluetooth
 4. **CPU governor**: Set to 'performance' on Linux (`cpupower frequency-set -g performance`)
 5. **Turbo**: Disable turbo/boost for consistent results

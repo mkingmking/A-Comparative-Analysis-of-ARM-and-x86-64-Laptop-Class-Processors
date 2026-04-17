@@ -1,0 +1,69 @@
+ hyperfine --warmup 5 --runs 100  './matmul_arm'  > results_matmul.txt
+
+
+
+
+Benchmark 1: ./fib_arm
+  Time (mean ± σ):     583.6 ms ±  26.3 ms    [User: 582.2 ms, System: 1.1 ms]
+  Range (min … max):   576.1 ms … 764.5 ms    100 runs
+ 
+Benchmark 1: ./matmul_arm
+  Time (mean ± σ):      26.0 ms ±   0.3 ms    [User: 25.3 ms, System: 0.5 ms]
+  Range (min … max):    25.4 ms …  26.6 ms    100 runs
+ 
+
+
+
+sudo ./measure_power_mac.sh ./matmul_arm
+Password:
+=== Power Measurement: ./fib_arm ===
+
+[1/2] Measuring IDLE for 20s — please don't touch the Mac...
+[2/2] Running benchmark in a loop while measuring for 20s...
+./measure_power_mac.sh: line 56: 96604 Killed: 9               ( while true; do
+    "$BENCHMARK" > /dev/null 2>&1;
+done )
+
+=== Results ===
+
+  Metric                         Idle         Load        Delta
+  ---------------------- ------------ ------------ ------------
+  CPU Power                   0.252 W      1.150 W      0.898 W
+  Combined (CPU+GPU+ANE)      0.280 W      1.187 W      0.907 W
+
+  Peak CPU Power during load:      2.462 W
+  Peak Combined during load:       2.513 W
+  Samples (idle/load):             40 / 40
+
+  Logs saved to: /tmp/pm_ibpqZ3/
+
+Notes:
+  • CPU Power is comparable to Linux 'perf energy-pkg' on x86.
+  • Combined Power adds GPU + Neural Engine, capturing full SoC.
+  • Energy per run = Delta × benchmark execution time.
+=== Power Measurement: ./matmul_arm ===
+
+[1/2] Measuring IDLE for 20s — please don't touch the Mac...
+[2/2] Running benchmark in a loop while measuring for 20s...
+./measure_power_mac.sh: line 56: 96719 Killed: 9               ( while true; do
+    "$BENCHMARK" > /dev/null 2>&1;
+done )
+
+=== Results ===
+
+  Metric                         Idle         Load        Delta
+  ---------------------- ------------ ------------ ------------
+  CPU Power                   0.279 W      1.364 W      1.085 W
+  Combined (CPU+GPU+ANE)      0.304 W      1.371 W      1.067 W
+
+  Peak CPU Power during load:      1.672 W
+  Peak Combined during load:       1.720 W
+  Samples (idle/load):             40 / 40
+
+  Logs saved to: /tmp/pm_4efR9w/
+
+Notes:
+  • CPU Power is comparable to Linux 'perf energy-pkg' on x86.
+  • Combined Power adds GPU + Neural Engine, capturing full SoC.
+  • Energy per run = Delta × benchmark execution time.
+(base) MUSTAFAMERT@Mustafa-MacBook-Air asm_aarch64 % 
