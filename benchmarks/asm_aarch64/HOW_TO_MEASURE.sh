@@ -79,7 +79,7 @@ sudo powermetrics --samplers cpu_power -i 500 -n 40 > power_fib.txt
 #
 # For each benchmark, report a table like:
 #
-# | Metric              | ARM (M3)  | x86-64 (Ryzen 5) |
+# | Metric              | ARM (M3)  | x86-64 (Ryzen 7) |
 # |---------------------|-----------|-------------------|
 # | Execution time (ms) | 450 ± 12  | 380 ± 8           |
 # | Avg CPU power (W)   | 5.2       | 28.4              |
@@ -92,7 +92,7 @@ sudo powermetrics --samplers cpu_power -i 500 -n 40 > power_fib.txt
 
 
 # =============================================
-#  ON YOUR LINUX PC (Ryzen 5)
+#  ON YOUR LINUX PC (Ryzen 7)
 # =============================================
 #
 # Build x86 assembly:

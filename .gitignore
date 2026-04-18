@@ -53,3 +53,19 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Paper source (not part of the code repo)
+ref.bib
+main_related_work_revised.tex
+
+# Compiled binaries (no extension — built from asm/C sources)
+benchmarks/asm_aarch64/fib_arm
+benchmarks/asm_aarch64/matmul_arm
+benchmarks/c_portable/fib_O0
+benchmarks/c_portable/fib_O2
+benchmarks/c_portable/matmul_c_O0
+benchmarks/c_portable/matmul_c_O2
+
+
+# macOS metadata
+.DS_Store

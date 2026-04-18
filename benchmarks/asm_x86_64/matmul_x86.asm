@@ -1,5 +1,5 @@
 ; matmul_x86.asm - Matrix Multiplication in x86-64 Assembly
-; Target: AMD Ryzen 5 running Linux
+; Target: AMD Ryzen 7 running Linux
 ;
 ; Computes C = A × B for 256×256 integer matrices.
 ; Demonstrates: x86 complex addressing modes, IMUL, memory operands,

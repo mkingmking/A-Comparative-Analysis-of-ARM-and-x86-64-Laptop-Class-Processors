@@ -7,7 +7,7 @@
 
 This benchmark suite contains three workload types implemented in:
 - **AArch64 assembly** (for Apple Silicon M3 / ARM-based systems)
-- **x86-64 assembly** (for AMD Ryzen 5 / Intel-based systems)
+- **x86-64 assembly** (for AMD Ryzen 7 / Intel-based systems)
 - **Portable C** (compiles natively on both — used for cross-validation)
 
 Each workload targets a different processor subsystem to reveal architectural
@@ -55,7 +55,7 @@ benchmarks/
 │   ├── matmul_arm.s
 │   ├── memwalk_arm.s
 │   └── fib_arm.s
-├── asm_x86_64/                # x86-64 assembly (run on Ryzen 5 Linux)
+├── asm_x86_64/                # x86-64 assembly (run on Ryzen 7 Linux)
 │   ├── matmul_x86.asm
 │   ├── memwalk_x86.asm
 │   └── fib_x86.asm
@@ -136,7 +136,7 @@ perf stat -r 30 ./matmul_x86
 To fairly compare architectures at the same power budget:
 
 1. Find the M3's average power during benchmarks (e.g., ~12W)
-2. Throttle the Ryzen 5 to a similar power draw:
+2. Throttle the Ryzen 7 to a similar power draw:
    ```bash
    # Set max frequency to reduce power to ~12W
    cpupower frequency-set -u 2.0GHz

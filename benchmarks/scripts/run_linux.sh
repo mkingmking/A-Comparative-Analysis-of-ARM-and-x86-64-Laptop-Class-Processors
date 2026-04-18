@@ -1,5 +1,5 @@
 #!/bin/bash
-# run_linux.sh - Benchmark runner for Linux (AMD Ryzen 5 / x86-64)
+# run_linux.sh - Benchmark runner for Linux (AMD Ryzen 7 / x86-64)
 #
 # Usage: ./run_linux.sh
 # (some perf features may need sudo or perf_event_paranoid=0)

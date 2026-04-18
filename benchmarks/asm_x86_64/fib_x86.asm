@@ -1,5 +1,5 @@
 ; fib_x86.asm - Recursive Fibonacci in x86-64 Assembly
-; Target: AMD Ryzen 5 running Linux
+; Target: AMD Ryzen 7 running Linux
 ;
 ; Demonstrates: x86-64 calling convention (System V AMD64 ABI),
 ;               complex instructions (CALL/RET with implicit stack ops),
