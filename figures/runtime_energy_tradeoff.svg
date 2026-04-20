@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="520" viewBox="0 0 780 520">
+  <rect width="100%" height="100%" fill="white"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #202020; }
+    .title { font-size: 18px; font-weight: 700; }
+    .axis { font-size: 13px; }
+    .tick { font-size: 12px; fill: #444; }
+    .label { font-size: 12px; }
+    .legend { font-size: 13px; }
+    .note { font-size: 11px; fill: #555; }
+  </style>
+<text x="390.0" y="32.0" class="title" text-anchor="middle">Runtime-Energy Tradeoff</text>
+<line x1="85.0" y1="70.0" x2="85.0" y2="455.0" stroke="#404040" stroke-width="1"/>
+<line x1="85.0" y1="455.0" x2="735.0" y2="455.0" stroke="#404040" stroke-width="1"/>
+<line x1="69.6" y1="70.0" x2="69.6" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="69.6" y="475.0" class="tick" text-anchor="middle">0</text>
+<line x1="172.0" y1="70.0" x2="172.0" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="172.0" y="475.0" class="tick" text-anchor="middle">100</text>
+<line x1="274.4" y1="70.0" x2="274.4" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="274.4" y="475.0" class="tick" text-anchor="middle">200</text>
+<line x1="376.7" y1="70.0" x2="376.7" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="376.7" y="475.0" class="tick" text-anchor="middle">300</text>
+<line x1="479.1" y1="70.0" x2="479.1" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="479.1" y="475.0" class="tick" text-anchor="middle">400</text>
+<line x1="581.5" y1="70.0" x2="581.5" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="581.5" y="475.0" class="tick" text-anchor="middle">500</text>
+<line x1="683.8" y1="70.0" x2="683.8" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="683.8" y="475.0" class="tick" text-anchor="middle">600</text>
+<line x1="85.0" y1="455.0" x2="735.0" y2="455.0" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="459.0" class="tick" text-anchor="end">0</text>
+<line x1="85.0" y1="397.5" x2="735.0" y2="397.5" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="401.5" class="tick" text-anchor="end">0.5</text>
+<line x1="85.0" y1="340.1" x2="735.0" y2="340.1" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="344.1" class="tick" text-anchor="end">1</text>
+<line x1="85.0" y1="282.6" x2="735.0" y2="282.6" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="286.6" class="tick" text-anchor="end">1.5</text>
+<line x1="85.0" y1="225.1" x2="735.0" y2="225.1" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="229.1" class="tick" text-anchor="end">2</text>
+<line x1="85.0" y1="167.7" x2="735.0" y2="167.7" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="171.7" class="tick" text-anchor="end">2.5</text>
+<line x1="85.0" y1="110.2" x2="735.0" y2="110.2" stroke="#D8D8D8" stroke-width="1"/>
+<text x="77.0" y="114.2" class="tick" text-anchor="end">3</text>
+<text x="390.0" y="495.0" class="axis" text-anchor="middle">Execution time (ms)</text>
+<text x="24.0" y="262.5" class="axis" text-anchor="middle" transform="rotate(-90 24.0 262.5)">Energy per run (J)</text>
+<text x="729.0" y="85.0" class="note" text-anchor="end">Lower-left is better</text>
+<circle cx="667.0" cy="394.8" r="7" fill="#00796B" stroke="#111" stroke-width="1"/>
+<text x="605.0" y="380.8" class="label" text-anchor="end">fib Apple</text>
+<circle cx="555.7" cy="104.5" r="7" fill="#D55E00" stroke="#111" stroke-width="1"/>
+<text x="485.7" y="90.5" class="label" text-anchor="end">fib Ryzen</text>
+<circle cx="96.3" cy="451.8" r="7" fill="#00796B" stroke="#111" stroke-width="1"/>
+<text x="114.3" y="449.8" class="label" text-anchor="start">matmul Apple</text>
+<circle cx="96.7" cy="434.3" r="7" fill="#D55E00" stroke="#111" stroke-width="1"/>
+<text x="114.7" y="420.3" class="label" text-anchor="start">matmul Ryzen</text>
+</svg>
