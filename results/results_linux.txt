@@ -1,0 +1,39 @@
+Linux / AMD Ryzen 7 3750H Results
+=================================
+
+Platform
+--------
+Processor: AMD Ryzen 7 3750H
+OS: Ubuntu 20.04, Linux kernel 5.15
+Benchmark binaries:
+- benchmarks/asm_x86_64/fib_x86
+- benchmarks/asm_x86_64/matmul_x86
+
+
+Timing Results
+--------------
+Tool: hyperfine
+Protocol: 5 warm-up runs, 100 measured runs
+
+Benchmark             Mean (ms)   Std. dev. (ms)   User (ms)   System (ms)   Min (ms)   Max (ms)   Runs
+-------------------------------------------------------------------------------------------------------
+fib(40)                 474.8           4.3          473.2          1.2        468.2      489.0      100
+matmul 256 x 256         26.4           4.4           25.0          1.5         19.6       36.6      100
+
+
+Energy Results
+--------------
+Tool: perf stat
+Protocol: 100 measured runs
+Event: power/energy-pkg/
+
+Benchmark             Package energy (J)   Relative std. error   Elapsed time (s)      Time rel. error
+------------------------------------------------------------------------------------------------------
+fib(40)                     3.05                  2.53%            0.47670 +/- 0.00165       0.35%
+matmul 256 x 256            0.18                  0.78%            0.022475 +/- 0.000379     1.69%
+
+
+Notes
+-----
+- Ryzen energy values are direct package-energy counter measurements.
+- The shell prompts, command redirects, blank terminal fragments, and duplicate mistyped benchmark label were removed.

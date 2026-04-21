@@ -1,0 +1,51 @@
+matmul_profile_O0 Trace Summary
+===============================
+
+Trace bundle: results/matmul_mac.trace
+Selected run: run 3 (matmul 256 x 256, portable C -O0 profiling run)
+Target process: matmul_profile_O0 pid 80470
+Start: 2026-04-20T22:27:21.630+02:00
+End: 2026-04-20T22:28:02.069+02:00
+Recorded duration: 40.438686 s
+End reason: Time limit reached
+Process termination: SIGKILL (exit status 9)
+
+Counter Order
+-------------
+1. Cycles
+2. Instructions
+3. BRANCH_MISPRED_NONSPEC
+4. L1D_CACHE_MISS_LD
+5. INST_INT_LD
+6. INST_BRANCH
+
+Filtering
+---------
+Startup/runtime rows before the first target workload frame were excluded.
+First included sample time: 2.568116250 s
+Included sample rows: 36,549 of 36,553 rows with counter values
+Included time span: 37.870000 s
+
+Aggregated Counter Totals
+-------------------------
+Cycles                   65,605,253,329
+Instructions             356,250,438,642
+BRANCH_MISPRED_NONSPEC   47,958,742
+L1D_CACHE_MISS_LD        8,456,359,417
+INST_INT_LD              171,681,723,006
+INST_BRANCH              49,203,148,669
+
+Derived Metrics
+---------------
+IPC:                              5.430
+Instructions per second:          9.407e+09
+Cycles per second:                1.732e+09
+Branches per second:              1.299e+09
+Branch misprediction rate:        0.097471%
+L1D miss / integer load rate:     4.925603%
+
+Notes
+-----
+- These are Apple M3 Instruments CPU Counters from portable C -O0 profiling runs.
+- The runs ended at the Instruments time limit, so totals are for the included measurement window, not for one completed benchmark invocation.
+- Rates such as IPC, branch-misprediction rate, and L1D miss/load rate are the useful values for manuscript comparison.

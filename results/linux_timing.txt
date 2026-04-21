@@ -1,0 +1,11 @@
+Linux Timing Results - AMD Ryzen 7 3750H
+========================================
+
+Tool: hyperfine
+Protocol: 5 warm-up runs, 100 measured runs
+Binaries: fib_x86, matmul_x86
+
+Benchmark             Mean (ms)   Std. dev. (ms)   User (ms)   System (ms)   Min (ms)   Max (ms)   Runs
+-------------------------------------------------------------------------------------------------------
+fib(40)                 474.8           4.3          473.2          1.2        468.2      489.0      100
+matmul 256 x 256         26.4           4.4           25.0          1.5         19.6       36.6      100

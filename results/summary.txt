@@ -1,0 +1,23 @@
+Cross-Platform Summary
+======================
+
+Timing, hyperfine, 100 runs
+---------------------------
+Benchmark             Apple M3 mean +/- sd (ms)      Ryzen 7 mean +/- sd (ms)
+----------------------------------------------------------------------------
+fib(40)                  583.6 +/- 26.3                 474.8 +/- 4.3
+matmul 256 x 256          26.0 +/- 0.3                   26.4 +/- 4.4
+
+
+Energy per run
+--------------
+Benchmark             Apple M3 CPU estimate (J)      Ryzen package (J)      Ryzen / Apple
+-----------------------------------------------------------------------------------------
+fib(40)                       0.5241                       3.05                  5.82x
+matmul 256 x 256              0.0282                       0.18                  6.38x
+
+
+Notes
+-----
+- Apple energy is a CPU-energy point estimate derived from powermetrics delta CPU power.
+- Ryzen energy is a direct package-energy value from perf power/energy-pkg/.

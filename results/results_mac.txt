@@ -1,0 +1,60 @@
+macOS / Apple M3 Results
+========================
+
+Platform
+--------
+Processor: Apple M3
+OS: macOS
+Benchmark binaries:
+- benchmarks/asm_aarch64/fib_arm
+- benchmarks/asm_aarch64/matmul_arm
+
+
+Timing Results
+--------------
+Tool: hyperfine
+Protocol: 5 warm-up runs, 100 measured runs
+
+Benchmark             Mean (ms)   Std. dev. (ms)   User (ms)   System (ms)   Min (ms)   Max (ms)   Runs
+-------------------------------------------------------------------------------------------------------
+fib(40)                 583.6          26.3          582.2          1.1        576.1      764.5      100
+matmul 256 x 256         26.0           0.3           25.3          0.5         25.4       26.6      100
+
+
+Power Results
+-------------
+Tool: benchmarks/asm_aarch64/measure_power_mac.sh
+Sampling method: powermetrics, 20-second idle window and 20-second load window
+Energy estimate: delta CPU power x mean benchmark runtime
+
+Benchmark: fib(40)
+
+Metric                         Idle        Load       Delta
+-----------------------------------------------------------
+CPU Power                   0.252 W     1.150 W     0.898 W
+Combined CPU+GPU+ANE        0.280 W     1.187 W     0.907 W
+
+Peak CPU Power during load:       2.462 W
+Peak Combined during load:        2.513 W
+Samples, idle/load:               40 / 40
+Derived CPU energy per run:       0.5241 J
+
+
+Benchmark: matmul 256 x 256
+
+Metric                         Idle        Load       Delta
+-----------------------------------------------------------
+CPU Power                   0.279 W     1.364 W     1.085 W
+Combined CPU+GPU+ANE        0.304 W     1.371 W     1.067 W
+
+Peak CPU Power during load:       1.672 W
+Peak Combined during load:        1.720 W
+Samples, idle/load:               40 / 40
+Derived CPU energy per run:       0.0282 J
+
+
+Notes
+-----
+- Apple energy values are CPU-energy point estimates from dynamic CPU power.
+- Combined CPU+GPU+ANE power is retained for context but is not used in the paper's main energy table.
+- The shell prompts, password prompt, temporary log paths, and expected killed-loop messages from the raw terminal capture were removed.

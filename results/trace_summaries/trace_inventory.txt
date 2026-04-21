@@ -1,0 +1,18 @@
+Trace Inventory
+===============
+
+Trace bundle: results/fib_mac.trace
+-----------------------------------
+Run 1: all processes, duration 32.855098 s, end reason: User pressed Stop
+  Events/formulas: Cycles (FIXED_CYCLES); Instructions (FIXED_INSTRUCTIONS)
+Run 2: fib_profile_O0 pid 80380, duration 40.465664 s, end reason: Time limit reached, termination SIGKILL  [selected for summary]
+  Events/formulas: Cycles (FIXED_CYCLES); Instructions (FIXED_INSTRUCTIONS); BRANCH_MISPRED_NONSPEC; L1D_CACHE_MISS_LD; INST_INT_LD; branch misprediction rate = : BRANCH_MISPRED_NONSPEC / INST_BRANCH * 100; IPC: Instructions / Cycles; L1D miss/load instruction rate: L1D_CACHE_MISS_LD / INST_INT_LD * 100
+
+Trace bundle: results/matmul_mac.trace
+--------------------------------------
+Run 1: all processes, duration 32.855098 s, end reason: User pressed Stop
+  Events/formulas: Cycles (FIXED_CYCLES); Instructions (FIXED_INSTRUCTIONS)
+Run 2: fib_profile_O0 pid 80380, duration 40.465664 s, end reason: Time limit reached, termination SIGKILL
+  Events/formulas: Cycles (FIXED_CYCLES); Instructions (FIXED_INSTRUCTIONS); BRANCH_MISPRED_NONSPEC; L1D_CACHE_MISS_LD; INST_INT_LD; branch misprediction rate = : BRANCH_MISPRED_NONSPEC / INST_BRANCH * 100; IPC: Instructions / Cycles; L1D miss/load instruction rate: L1D_CACHE_MISS_LD / INST_INT_LD * 100
+Run 3: matmul_profile_O0 pid 80470, duration 40.438686 s, end reason: Time limit reached, termination SIGKILL  [selected for summary]
+  Events/formulas: Cycles (FIXED_CYCLES); Instructions (FIXED_INSTRUCTIONS); BRANCH_MISPRED_NONSPEC; L1D_CACHE_MISS_LD; INST_INT_LD; branch misprediction rate = : BRANCH_MISPRED_NONSPEC / INST_BRANCH * 100; IPC: Instructions / Cycles; L1D miss/load instruction rate: L1D_CACHE_MISS_LD / INST_INT_LD * 100

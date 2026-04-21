@@ -1,0 +1,11 @@
+macOS Timing Results - Apple M3
+===============================
+
+Tool: hyperfine
+Protocol: 5 warm-up runs, 100 measured runs
+Binaries: fib_arm, matmul_arm
+
+Benchmark             Mean (ms)   Std. dev. (ms)   User (ms)   System (ms)   Min (ms)   Max (ms)   Runs
+-------------------------------------------------------------------------------------------------------
+fib(40)                 583.6          26.3          582.2          1.1        576.1      764.5      100
+matmul 256 x 256         26.0           0.3           25.3          0.5         25.4       26.6      100

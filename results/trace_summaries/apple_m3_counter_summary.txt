@@ -1,0 +1,26 @@
+Apple M3 CPU Counter Summary
+=============================
+
+Source traces: results/fib_mac.trace and results/matmul_mac.trace
+Selected runs: fib_profile_O0 run 2; matmul_profile_O0 run 3
+
+Metric                              fib_profile_O0        matmul_profile_O0
+--------------------------------------------------------------------------
+Included time span (s)                      37.228998              37.870000
+Included counter rows                          35,986                 36,549
+Cycles                                 65,811,923,566         65,605,253,329
+Instructions                          246,062,338,593        356,250,438,642
+INST_BRANCH                            55,251,551,067         49,203,148,669
+BRANCH_MISPRED_NONSPEC                        370,050             47,958,742
+L1D_CACHE_MISS_LD                             280,979          8,456,359,417
+INST_INT_LD                            61,390,612,602        171,681,723,006
+IPC                                             3.739                  5.430
+Instructions/s                              6.609e+09              9.407e+09
+Branch miss rate                            0.000670%              0.097471%
+L1D miss / int load rate                    0.000458%              4.925603%
+
+Notes
+-----
+- Counter totals are aggregated after excluding startup/runtime samples before the first target workload frame.
+- The trace totals are for long-running C -O0 profiling windows, not for the assembly timing runs.
+- This file is intended as a readable replacement for manually inspecting the .trace bundles.

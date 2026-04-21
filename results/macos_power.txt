@@ -1,0 +1,33 @@
+macOS Power Results - Apple M3
+==============================
+
+Tool: benchmarks/asm_aarch64/measure_power_mac.sh
+Sampling method: powermetrics, 20-second idle window and 20-second load window
+Energy estimate: delta CPU power x mean benchmark runtime
+
+Benchmark: fib(40)
+
+Metric                         Idle        Load       Delta
+-----------------------------------------------------------
+CPU Power                   0.252 W     1.150 W     0.898 W
+Combined CPU+GPU+ANE        0.280 W     1.187 W     0.907 W
+
+Peak CPU Power during load:       2.462 W
+Peak Combined during load:        2.513 W
+Samples, idle/load:               40 / 40
+Mean runtime used:                0.5836 s
+Derived CPU energy per run:       0.5241 J
+
+
+Benchmark: matmul 256 x 256
+
+Metric                         Idle        Load       Delta
+-----------------------------------------------------------
+CPU Power                   0.279 W     1.364 W     1.085 W
+Combined CPU+GPU+ANE        0.304 W     1.371 W     1.067 W
+
+Peak CPU Power during load:       1.672 W
+Peak Combined during load:        1.720 W
+Samples, idle/load:               40 / 40
+Mean runtime used:                0.0260 s
+Derived CPU energy per run:       0.0282 J
