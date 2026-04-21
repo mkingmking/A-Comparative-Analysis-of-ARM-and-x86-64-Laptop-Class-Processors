@@ -54,9 +54,40 @@ dkms.conf
 # debug information files
 *.dwo
 
-# Paper source (not part of the code repo)
-ref.bib
-main_related_work_revised.tex
+# Assembly source files
+*.s
+*.S
+
+# Article / paper sources and LaTeX build artifacts
+*.tex
+*.bib
+*.pdf
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.blg
+*.bbl
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ind
+*.ilg
+*.glg
+*.glo
+*.gls
+*.acn
+*.acr
+*.alg
+*.xdv
 
 # Compiled binaries (no extension — built from asm/C sources)
 benchmarks/asm_aarch64/fib_arm
