@@ -20,7 +20,7 @@
 \correspondingAuthor{mustafa\_mert.ozyilmaz@etu.sorbonne-universite.fr}
 \shortAuthors{Özyılmaz}
 
-\abstractEng{ARM-based and x86-64 laptop processors differ not only in instruction-set design, but also in memory hierarchy, core organization, system integration, and power-management mechanisms. This study presents a combined architectural and experimental comparison of an Apple M3 system and an AMD Ryzen 7 3750H system. The architectural analysis contrasts AArch64's fixed-width load-store design with the variable-length, memory-operand-rich x86-64 instruction model, and discusses how register organization, calling conventions, heterogeneous core organization, memory behavior, and low-power mechanisms shape observed performance and energy characteristics. The experimental part uses two native assembly benchmarks: a recursive Fibonacci workload and an integer matrix-multiplication workload. The analysis combines repeated timing measurements, processor-energy measurements, and selected x86 microarchitectural counters. The Ryzen platform is decisively faster on the branch-heavy Fibonacci benchmark, while matrix multiplication shows no meaningful timing advantage for either platform in the present measurements. In contrast, the Apple platform is markedly more energy-efficient, reducing energy-to-solution by approximately 5.82$\times$ on Fibonacci and 6.38$\times$ on matrix multiplication. These results are interpreted as platform-level findings rather than as pure ISA-only effects, reflecting differences in implementation, system integration, and measurement methodology in addition to instruction-set structure.}
+\abstractEng{ARM-based and x86-64 laptop processors differ not only in instruction-set design, but also in memory hierarchy, core organization, system integration, and power-management mechanisms. This study presents a combined architectural and experimental comparison of an Apple M3 system and an AMD Ryzen 7 3750H system. The architectural analysis contrasts AArch64's fixed-width load-store design with the variable-length, memory-operand-rich x86-64 instruction model, and discusses how register organization, calling conventions, heterogeneous core organization, memory behavior, and low-power mechanisms shape observed performance and energy characteristics. The experimental part uses two native assembly benchmarks: a recursive Fibonacci workload and an integer matrix-multiplication workload. The analysis combines repeated timing measurements, processor-energy measurements, and cross-platform microarchitectural counter measurements from matched portable-C profiling runs. The Ryzen platform is decisively faster on the branch-heavy Fibonacci benchmark, while matrix multiplication shows no meaningful timing advantage for either platform in the present measurements. In contrast, the Apple platform is markedly more energy-efficient, reducing energy-to-solution by approximately 5.82$\times$ on Fibonacci and 6.38$\times$ on matrix multiplication. These results are interpreted as platform-level findings rather than as pure ISA-only effects, reflecting differences in implementation, system integration, and measurement methodology in addition to instruction-set structure.}
 
 \keywordsEng{ARM architecture, benchmarking, energy efficiency, microprocessors, SoC design, x86-64}
 
@@ -51,8 +51,8 @@ with native benchmarking of two hand-written assembly programs: a recursive
 Fibonacci benchmark that emphasizes control flow and function calls, and an integer
 matrix-multiplication benchmark that emphasizes arithmetic throughput and memory
 behavior. The resulting measurements are analyzed in terms of raw execution time,
-processor energy per completed workload, and, on the x86 platform, selected
-microarchitectural counters.
+processor energy per completed workload, and cross-platform microarchitectural
+counters collected from matched portable-C profiling runs.
 
 The main contributions of this work are as follows:
 \begin{itemize}
@@ -61,11 +61,10 @@ The main contributions of this work are as follows:
     core topology, and power-management mechanisms.
     \item We design a native assembly benchmarking methodology that compares the same
     workload logic across AArch64 and x86-64.
-    \item We report repeated timing and energy measurements for two workloads with
-    distinct execution characteristics, enabling a direct discussion of the
-    performance--energy tradeoff on the tested platforms.
-    \item We interpret the experimental findings using x86 hardware-counter data and
-    an explicitly platform-aware framework.
+    \item We report repeated timing and energy measurements for two native assembly workloads with distinct execution characteristics, while using matched portable-C profiling runs to provide cross-platform microarchitectural context for the resulting performance--energy tradeoffs.
+
+    \item We interpret the experimental findings using cross-platform hardware-counter data from matched portable-C profiling runs and an explicitly platform-aware framework.
+
 \end{itemize}
 
 \section{Related Work}
@@ -175,69 +174,26 @@ used in the experiments was as follows:
 \end{enumerate}
 
 Wall-clock timing was measured with \texttt{hyperfine}~\cite{hyperfine}. On the
-ARM-based macOS platform, timing and power-related observations were collected
-using native Apple tooling. On the x86-64 platform, timing, energy, and PMU
-observations were collected using Linux \texttt{perf stat} and related native
-performance-counter interfaces.
+ARM-based macOS platform, timing, power-related observations, and PMU counters
+were collected using native Apple tooling. On the x86-64 platform, timing,
+energy, and PMU observations were collected using Linux \texttt{perf stat} and
+related native performance-counter interfaces.
 
 
 
 \subsection{Statistical Treatment}
 
 For each benchmark configuration, the reported runtime results are summarized
-using the sample mean, sample standard deviation, minimum, maximum, and a 95\%
-confidence interval for the mean. \\ Let $x_1, x_2, \dots, x_n$ denote the
-measured runtimes for a given configuration. The sample mean and sample
-standard deviation are computed as
-
-\begin{equation}
-\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i,
-\end{equation}
-
-\begin{equation}
-s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2}.
-\end{equation}
-
-The 95\% confidence interval is then reported as
-
-\begin{equation}
-\bar{x} \pm t_{0.975,n-1}\frac{s}{\sqrt{n}}.
-\end{equation}
+using the sample mean, sample standard deviation, minimum, maximum, and 95\%
+confidence interval for the mean. These summaries are sufficient to show both
+central tendency and run-to-run variability without assuming that a single timing
+sample is representative.
 
 The same treatment is applied to energy measurements when repeated-run summary
 statistics are available. In the present dataset, Linux \texttt{perf} provides
 repeated-run summaries directly for energy measurements, while the Apple energy
 values are derived from power-sampling estimates and are therefore reported as
 point estimates.
-
-\subsection{Normalized Efficiency Metrics}
-
-Because the compared systems differ in microarchitecture, thermal envelope, and
-platform design, raw runtime alone is insufficient for interpretation.
-Therefore, the study also considers normalized efficiency concepts such as
-throughput, energy per operation, performance per joule, and energy-delay
-product (EDP) \cite{hennessy_patterson_2019}. If a benchmark performs $N_{\mathrm{ops}}$ logical operations in
-time $T$ while consuming energy $E$, then
-
-\begin{equation}
-\mathrm{Throughput} = \frac{N_{\mathrm{ops}}}{T},
-\end{equation}
-
-\begin{equation}
-\mathrm{Energy\ per\ operation} = \frac{E}{N_{\mathrm{ops}}},
-\end{equation}
-
-\begin{equation}
-\mathrm{Performance\ per\ joule} = \frac{N_{\mathrm{ops}}}{E},
-\end{equation}
-
-\begin{equation}
-\mathrm{EDP} = E \cdot T.
-\end{equation}
-
-These quantities help distinguish raw speed advantages from efficiency
-advantages, while the confidence intervals quantify the stability of the timing
-measurements.
 
 \subsection{Accounting for Hardware Asymmetry}
 
@@ -384,7 +340,7 @@ CPU cores / threads & 8 cores & 4 cores / 8 threads \\
 Power source during measurements & Battery & Battery \\
 Timing tool & \texttt{hyperfine} & \texttt{hyperfine} \\
 Energy tool & \texttt{powermetrics} & \texttt{perf stat} / \texttt{energy-pkg} \\
-Additional PMU counters & not collected & \texttt{perf stat} \\
+Additional PMU counters & Instruments CPU Counters & \texttt{perf stat} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -425,11 +381,14 @@ power sampling, whereas the Ryzen values are direct package-energy
 counter readings.
 
 \paragraph{Microarchitectural counters.}
-On the Ryzen platform, we additionally collected cycle counts,
-retired instructions, branch mispredictions, and L1 dcache miss
-rates using \texttt{perf stat}. These counters are used only to
-characterize the x86 workload behavior; an equivalent cross-platform
-PMU analysis was outside the scope of this study.
+Microarchitectural counters were collected separately from the assembly
+timing and energy measurements. For this analysis, portable C profiling
+versions of the Fibonacci and matrix-multiplication workloads were
+compiled with \texttt{-O0} and run as long-lived single processes. On
+Apple~M3, counters were collected with the Instruments CPU Counters
+template. On Ryzen~7~3750H, the same portable C workloads were measured
+with Linux \texttt{perf stat}. The counter results are therefore used to
+compare workload behavior under matched portable-C profiling runs.
 
 \subsection{Execution Time: Assembly Implementations}
 \label{sec:time_results}
@@ -485,39 +444,58 @@ stable, with a coefficient of variation of approximately 1.2\% versus
 more sensitive to platform-level frequency and thermal variability on
 the x86 laptop than on the Apple SoC.
 
-\subsection{Microarchitectural Analysis (x86-64)}
+\subsection{Microarchitectural Analysis}
 \label{sec:uarch}
 
-Table~\ref{tab:uarch} presents representative hardware performance
-counter data collected on the Ryzen platform.
+Table~\ref{tab:uarch} presents hardware performance counter results for
+the portable C profiling runs. These runs use the same workload
+structure on both systems but are distinct from the hand-written
+assembly implementations used for the timing and energy results.
 
-\begin{table}[!ht]
+\begin{table*}[!ht]
 \centering
-\caption{Representative microarchitectural counters for the Ryzen 7 3750H assembly runs.}
+\small
+\caption{Representative microarchitectural counter rates for matched portable C \texttt{-O0} profiling runs. Apple counters were collected with Instruments CPU Counters; Ryzen counters were collected with Linux \texttt{perf stat}.}
 \label{tab:uarch}
-\begin{tabularx}{\columnwidth}{lXX}
+\begin{tabularx}{\textwidth}{lXXXX}
 \toprule
-Counter & fib(40) & matmul $256\times256$ \\
+Counter & Apple fib(40) & Ryzen fib(40) & Apple matmul & Ryzen matmul \\
 \midrule
-Cycles                       & $1.87 \times 10^9$ & $7.72 \times 10^7$ \\
-Instructions retired         & $2.99 \times 10^9$ & $2.33 \times 10^8$ \\
-Instructions per cycle (IPC) & 1.60               & 2.72 \\
-Branches                     & $9.98 \times 10^8$ & $3.33 \times 10^7$ \\
-Branch misprediction rate    & 0.11\%             & 0.38\% \\
-L1 dcache load-miss rate     & 0.00\%             & 48.36\% \\
+Measured window              & 37.23~s & 32.43~s & 37.87~s & 38.94~s \\
+Instructions per cycle (IPC) & 3.74 & 2.49 & 5.43 & 2.83 \\
+Instructions per second      & $6.61 \times 10^9$ & $9.45 \times 10^9$ & $9.41 \times 10^9$ & $1.12 \times 10^{10}$ \\
+Branch misprediction rate    & 0.00067\% & 0.095\% & 0.097\% & 0.406\% \\
+L1D miss/load indicator      & 0.00046\% & 0.0015\% & 4.93\% & 7.31\% \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{table*}
 
-These counters highlight the different execution characteristics of the
-two workloads. Fibonacci shows low IPC and a very low branch
-misprediction rate, consistent with a branch- and call-dominated
-execution pattern that the Zen+ predictor handles efficiently. Matrix
-multiplication, by contrast, achieves substantially higher IPC,
-indicating better exploitation of instruction-level parallelism, but it
-also exhibits a high L1 dcache miss rate, consistent with repeated
-streaming from lower cache levels during the traversal of three
-$256\times256$ integer matrices.
+The counter data show that the Apple M3 executes both portable-C
+profiling workloads with substantially higher IPC than the Ryzen 7
+3750H. For Fibonacci, the Apple run reaches 3.74 IPC versus 2.49 IPC on
+Ryzen; for matrix multiplication, the corresponding values are 5.43 and
+2.83. The Ryzen system nevertheless retires more instructions per
+second in these profiling runs because its measured cycle rate is
+higher during the runs. This helps explain why higher IPC alone does
+not determine the wall-clock result.
+
+Branch behavior is favorable on both systems, but the Apple counters
+show lower misprediction rates. The difference is especially large for
+Fibonacci, where the Apple run records a branch misprediction rate of
+0.00067\%, compared with 0.095\% on Ryzen. Matrix multiplication has a
+higher branch-misprediction rate on both systems, but the rates remain
+below 0.5\%, indicating that branch prediction is not the dominant
+source of cost for that workload.
+
+The L1 data also separate the two workloads. Fibonacci has negligible
+L1D load-miss rates on both systems, while matrix multiplication places
+clearer pressure on the data-cache hierarchy. The Apple M3 profiling
+run records a 4.93\% L1D load-miss rate for matrix multiplication,
+whereas the Ryzen run records 7.31\%. Because the Apple denominator is
+derived from integer load instructions and the Ryzen denominator from
+reported L1 data-cache loads, these percentages should be interpreted
+as comparable workload indicators rather than as perfectly identical
+hardware definitions.
 
 \subsection{Energy Efficiency}
 \label{sec:energy_results}
@@ -549,12 +527,48 @@ matmul $256\times256$ & $\approx 0.0282$ & point estimate; CI unavailable & $0.1
 \label{fig:energy_per_run}
 \end{figure*}
 
+To make the energy results easier to compare across platforms,
+Table~\ref{tab:normalized_efficiency} reports normalized workload-level
+metrics. For \texttt{fib(40)}, the normalization unit is one recursive
+function invocation in the naive recursion tree, giving
+$2F_{41}-1 = 331{,}160{,}281$ calls. For matrix multiplication, the
+normalization unit is one integer arithmetic operation, with
+$2N^3 = 33{,}554{,}432$ multiply/add operations for $N=256$. These
+units are workload-specific and should not be compared directly across
+the two benchmarks; they are used to compare platforms within each
+benchmark. The table also reports the energy-delay product (EDP) for
+each completed benchmark run.
+
+\begin{table*}[!ht]
+\centering
+\small
+\caption{Normalized workload-level efficiency metrics for the assembly benchmarks. Apple energy values are CPU-energy estimates, while Ryzen values are package-energy measurements.}
+\label{tab:normalized_efficiency}
+\begin{tabularx}{\textwidth}{llXXXX}
+\toprule
+Benchmark & Platform & Throughput & Energy/unit & Work/J & EDP (J\,s) \\
+\midrule
+fib(40) & Apple M3 & $5.67 \times 10^8$ calls/s & 1.58 nJ/call & $6.32 \times 10^8$ calls/J & 0.306 \\
+fib(40) & Ryzen 7 3750H & $6.97 \times 10^8$ calls/s & 9.21 nJ/call & $1.09 \times 10^8$ calls/J & 1.45 \\
+matmul $256\times256$ & Apple M3 & $1.29 \times 10^9$ ops/s & 0.840 nJ/op & $1.19 \times 10^9$ ops/J & $7.33 \times 10^{-4}$ \\
+matmul $256\times256$ & Ryzen 7 3750H & $1.27 \times 10^9$ ops/s & 5.36 nJ/op & $1.86 \times 10^8$ ops/J & $4.75 \times 10^{-3}$ \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
 Although the Ryzen is faster on Fibonacci and statistically tied with
 the M3 on matrix multiplication, the Apple platform uses far less
 measured or estimated processor energy per completed workload in both
 cases, as shown in Figure~\ref{fig:energy_per_run}. The gap is
 substantial: the Ryzen/M3 energy ratio is approximately $5.82\times$
 on Fibonacci and $6.38\times$ on matrix multiplication.
+The normalized values in Table~\ref{tab:normalized_efficiency} show the
+same pattern. The Ryzen system completes more Fibonacci calls per
+second, consistent with its lower wall-clock time, but the Apple M3
+performs about $5.82\times$ more recursive calls per joule. For matrix
+multiplication, throughput is essentially tied, while the Apple M3
+performs about $6.38\times$ more integer operations per joule and has a
+substantially lower energy-delay product.
 
 This is the central empirical result of the study. For the tested
 mobile-class laptop platforms, the Apple M3 delivers markedly better
@@ -608,14 +622,19 @@ The experimental results support the following conclusions:
   \item On measured or estimated processor energy per completed workload, the Apple M3 is
         substantially more efficient: the Ryzen/M3 energy ratio is
         approximately $5.82\times$ on Fibonacci and $6.38\times$ on
-        matrix multiplication.
+        matrix multiplication. The normalized calls-per-joule and
+        operations-per-joule metrics show the same advantage.
   \item Runtime variability is workload-dependent: the Ryzen is more
         stable on Fibonacci, whereas the Apple platform is much more
         stable on matrix multiplication.
-  \item The x86 performance counters indicate that Fibonacci is
-        dominated by branches and function calls, whereas matrix
-        multiplication exposes substantially higher memory pressure at
-        the L1 level while sustaining much higher IPC.
+  \item The matched portable-C counter measurements show that the Apple
+        M3 sustains higher IPC on both profiling workloads, while the
+        Ryzen system retires more instructions per second because of
+        its higher measured cycle rate.
+  \item The counter data also confirm that the two workloads stress
+        different parts of the processor: Fibonacci remains primarily
+        control-flow and call intensive, whereas matrix multiplication
+        places greater pressure on the data-cache hierarchy.
 \end{enumerate}
 
 Overall, these results show that the tested ARM- and x86-64-based
@@ -645,16 +664,20 @@ ISA-level verdict. The measured differences reflect not only instruction-set des
 but also process technology, SoC integration, cache organization, operating-system
 behavior, and measurement methodology.
 
-The architectural discussion and x86 hardware-counter data help explain the observed
-behavior. Fibonacci places greater emphasis on control flow and function-call
-handling, where the Ryzen platform performs strongly, while matrix multiplication
-places greater pressure on the memory hierarchy and exhibits much higher IPC. The
-Apple system, meanwhile, appears to benefit from a platform design that sustains far
+The architectural discussion and cross-platform counter data help explain the
+observed behavior. The matched portable-C profiling runs show higher IPC on the
+Apple M3, but also show that the Ryzen platform retires more instructions per
+second because of its higher measured cycle rate. Fibonacci places greater
+emphasis on control flow and function-call handling, where the Ryzen platform
+performs strongly in the assembly timing measurements, while matrix
+multiplication places greater pressure on the memory hierarchy. The Apple
+system, meanwhile, appears to benefit from a platform design that sustains far
 lower energy per completed task across both workloads.
 
 Future work may extend the benchmark suite with additional workload classes,
-incorporate more closely matched platforms, and add cross-platform PMU analysis in
-order to refine the distinction between ISA-level and platform-level effects.
+incorporate more closely matched platforms, and broaden the PMU analysis to
+optimized C, hand-written assembly, and additional counter groups in order to
+refine the distinction between ISA-level and platform-level effects.
 
 % --- Article Information required by the template
 \authContributions{The author prepared the article individually, including the study design, literature review, benchmark design, analysis framework, and manuscript preparation.}
