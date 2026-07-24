@@ -1,0 +1,13 @@
+Linux Energy Results - AMD Ryzen 7 3750H
+========================================
+
+Tool: perf stat
+Protocol: 100 measured runs
+Event: power/energy-pkg/
+
+
+
+Benchmark	       Package energy (J)	Relative std. error	    Elapsed time (s)	    Time rel. error
+------------------------------------------------------------------------------------------------------
+fib(40)	            3.04	            2.54%	                0.47538 +/- 0.00164	        0.34%
+matmul 256 x 256	0.179	            0.79%	                0.022409 +/- 0.000378	    1.68%

@@ -57,6 +57,10 @@ dkms.conf
 # Assembly source files
 *.s
 *.S
+!benchmarks/asm_aarch64/fib_arm.s
+!benchmarks/asm_aarch64/matmul_arm.s
+!benchmarks/asm_aarch64/fib_arm_profile.s
+!benchmarks/asm_aarch64/matmul_arm_profile.s
 
 # Article / paper sources and LaTeX build artifacts
 *.tex

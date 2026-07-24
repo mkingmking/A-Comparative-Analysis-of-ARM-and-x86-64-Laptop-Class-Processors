@@ -1,0 +1,20 @@
+M3 timing re-run - 20260722_223106
+======================================
+Preconditions verified: AC power, Low Power Mode off (see
+check_measurement_conditions.sh output printed above).
+
+fib(40)    mean runtime (s): 0.3306830396300002
+matmul     mean runtime (s): 0.01607637205
+
+Compare against the original (possibly throttled) session:
+  fib(40)    583.6 ms  (results/results_mac.txt)
+  matmul      26.0 ms  (results/results_mac.txt)
+
+Compare against Ryzen (results/linux_timing.txt):
+  fib(40)    474.8 ms
+  matmul      26.4 ms
+
+Next step: feed $FIB_MEAN / $MATMUL_MEAN into rerun_energy.sh as
+the MEAN_RUNTIME_S argument, e.g.:
+  sudo ./rerun_energy.sh ./fib_arm    0.3306830396300002 25
+  sudo ./rerun_energy.sh ./matmul_arm 0.01607637205 25

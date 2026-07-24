@@ -6,16 +6,37 @@ two-sample Welch's t-test -- the statistical test that was previously
 impossible because the Apple side had no repeated-run variance.
 
 Usage:
-    python3 analyze_energy_windows.py <csv_file> <fib|matmul>
+    python3 analyze_energy_windows.py <csv_file> <fib|matmul> [--skip-warmup N]
+        [--no-outlier-filter] [--runtime-json PATH]
 
-The CSV is produced by measure_power_mac_repeated.sh and has columns:
-    window,idle_cpu_w,load_cpu_w,delta_cpu_w,mean_runtime_s,energy_j
+--skip-warmup N (default 0): discard the first N windows before computing
+statistics. measure_power_mac_repeated.sh now runs and discards its own
+warm-up window before recording any of the N requested windows, so CSVs it
+produces need no further skipping. CSVs collected before that fix (window 1
+still present as the first data row) need --skip-warmup 1.
+
+Outlier filter (on by default): after any --skip-warmup, a window is
+flagged and excluded if its idle power exceeds max(3x the run's median idle
+power, 0.15 W), or if its delta (load - idle) is negative. This is a
+recurring, real contamination signature -- background CPU activity spiking
+during the idle phase of one window -- seen even after the pre-flight
+stray-process check was added, roughly 1-3 windows per 25 in practice. Pass
+--no-outlier-filter to disable it and use every window as recorded.
+
+--runtime-json PATH: read a hyperfine JSON result and additionally report a
+delta-method confidence interval for mean energy that propagates uncertainty
+from both the retained power-window mean and the runtime mean.
+
+Columns are read positionally (window, idle, load, delta, ..., energy=last
+column), not by header name, so this works whether or not a given CSV
+includes the retired mean_runtime_s column.
 
 Ryzen reference stats (from results/linux_energy.txt / Table tab:energy in
 the paper) are hardcoded below per benchmark: mean package energy (J) and
 the relative standard error (%) reported by `perf stat -r 100`, n=100.
 """
 import csv
+import json
 import math
 import statistics
 import sys
@@ -106,21 +127,107 @@ def cohens_d(m1, s1, n1, m2, s2, n2):
     return (m1 - m2) / sp
 
 
-def main():
-    if len(sys.argv) != 3 or sys.argv[2] not in RYZEN_REF:
-        print(f"Usage: {sys.argv[0]} <csv_file> <fib|matmul>")
-        sys.exit(1)
-
-    csv_path, bench = sys.argv[1], sys.argv[2]
-
-    energies = []
+def load_windows(csv_path):
+    """Returns a list of (window, idle_w, load_w, delta_w, energy_j) tuples,
+    read positionally: idx0=window, idx1=idle, idx2=load, idx3=delta,
+    idx[-1]=energy. Robust to whether mean_runtime_s is present as a middle
+    column."""
+    rows = []
     with open(csv_path, newline="") as f:
-        for row in csv.DictReader(f):
-            energies.append(float(row["energy_j"]))
+        reader = csv.reader(f)
+        next(reader)  # header
+        for parts in reader:
+            if not parts:
+                continue
+            window = int(parts[0])
+            idle_w, load_w, delta_w = float(parts[1]), float(parts[2]), float(parts[3])
+            energy_j = float(parts[-1])
+            rows.append((window, idle_w, load_w, delta_w, energy_j))
+    return rows
 
+
+def filter_outliers(rows):
+    """Flags a window as contaminated if its idle power is a large spike
+    relative to the run's median idle, or if delta went negative (load
+    measured lower than idle, physically impossible for a real load)."""
+    idles = [r[1] for r in rows]
+    median_idle = statistics.median(idles)
+    threshold = max(3 * median_idle, 0.15)
+    kept, dropped = [], []
+    for r in rows:
+        _, idle_w, _, delta_w, _ = r
+        if idle_w > threshold or delta_w < 0:
+            dropped.append(r)
+        else:
+            kept.append(r)
+    return kept, dropped, median_idle
+
+
+def parse_args(argv):
+    """Manual parser: two required positionals (csv_path, bench), plus
+    optional --skip-warmup N, --no-outlier-filter, and
+    --runtime-json PATH in any order."""
+    positional = []
+    skip = 0
+    no_filter = False
+    runtime_json = None
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg == "--skip-warmup":
+            if i + 1 >= len(argv):
+                return None
+            skip = int(argv[i + 1])
+            i += 2
+        elif arg == "--no-outlier-filter":
+            no_filter = True
+            i += 1
+        elif arg == "--runtime-json":
+            if i + 1 >= len(argv):
+                return None
+            runtime_json = argv[i + 1]
+            i += 2
+        elif arg.startswith("--"):
+            return None
+        else:
+            positional.append(arg)
+            i += 1
+    if len(positional) != 2 or positional[1] not in RYZEN_REF:
+        return None
+    return positional[0], positional[1], skip, no_filter, runtime_json
+
+
+def main():
+    parsed = parse_args(sys.argv[1:])
+    if parsed is None:
+        print(
+            f"Usage: {sys.argv[0]} <csv_file> <fib|matmul> "
+            "[--skip-warmup N] [--no-outlier-filter] [--runtime-json PATH]"
+        )
+        sys.exit(1)
+    csv_path, bench, skip, no_filter, runtime_json = parsed
+
+    all_rows = load_windows(csv_path)
+    warmup, rows = all_rows[:skip], all_rows[skip:]
+    if warmup:
+        print(f"Discarded {len(warmup)} warm-up window(s): {[('%.4f J' % r[4]) for r in warmup]}")
+
+    if no_filter:
+        kept, dropped, median_idle = rows, [], statistics.median(r[1] for r in rows) if rows else 0.0
+    else:
+        kept, dropped, median_idle = filter_outliers(rows)
+        if dropped:
+            print(
+                f"Outlier filter (median idle={median_idle:.4f} W, threshold={max(3*median_idle, 0.15):.4f} W): "
+                f"dropped window(s) {[r[0] for r in dropped]}"
+            )
+            for r in dropped:
+                print(f"    window {r[0]}: idle={r[1]:.4f}W load={r[2]:.4f}W delta={r[3]:.4f}W energy={r[4]:.4f}J")
+
+    energies = [r[4] for r in kept]
     n = len(energies)
     if n < 3:
-        print(f"Only {n} window(s) in {csv_path} -- need at least a few to compute sd/CI.")
+        print(f"Only {n} window(s) left in {csv_path} after skip/filter -- need at least a few to compute sd/CI.")
         sys.exit(1)
 
     mean = statistics.mean(energies)
@@ -131,12 +238,41 @@ def main():
     cv_pct = 100 * sd / mean
 
     print(f"=== Apple M3 repeated-window energy: {bench} ===")
-    print(f"  windows (n)        : {n}")
+    print(f"  windows (n)        : {n}  ({len(dropped)} dropped as outliers, {len(warmup)} warm-up)")
     print(f"  mean energy        : {mean:.4f} J")
     print(f"  sample sd          : {sd:.4f} J")
     print(f"  CV                 : {cv_pct:.2f}%")
     print(f"  95% CI (t, df={n-1}): [{ci_lo:.4f}, {ci_hi:.4f}] J")
     print()
+
+    if runtime_json:
+        with open(runtime_json) as f:
+            timing = json.load(f)["results"][0]
+        runtime_mean = float(timing["mean"])
+        runtime_sd = float(timing["stddev"])
+        runtime_n = len(timing["times"])
+        powers = [r[3] for r in kept]
+        power_mean = statistics.mean(powers)
+        power_sd = statistics.stdev(powers)
+        propagated_mean = power_mean * runtime_mean
+        power_component = runtime_mean**2 * power_sd**2 / n
+        runtime_component = power_mean**2 * runtime_sd**2 / runtime_n
+        propagated_sem = math.sqrt(power_component + runtime_component)
+        propagated_df = (power_component + runtime_component) ** 2 / (
+            power_component**2 / (n - 1)
+            + runtime_component**2 / (runtime_n - 1)
+        )
+        propagated_tcrit = t_crit_95(propagated_df)
+        propagated_lo = propagated_mean - propagated_tcrit * propagated_sem
+        propagated_hi = propagated_mean + propagated_tcrit * propagated_sem
+        print("=== Delta-method CI including runtime-mean uncertainty ===")
+        print(f"  power windows (n_P): {n}")
+        print(f"  timing runs (n_T)  : {runtime_n}")
+        print(f"  mean energy        : {propagated_mean:.4f} J")
+        print(f"  propagated SE      : {propagated_sem:.4f} J")
+        print(f"  effective df       : {propagated_df:.1f}")
+        print(f"  95% CI             : [{propagated_lo:.4f}, {propagated_hi:.4f}] J")
+        print()
 
     ref = RYZEN_REF[bench]
     ryzen_mean = ref["mean_j"]
@@ -157,9 +293,17 @@ def main():
     print(f"  t({df:.1f}) = {t:.3f}, p = {p:.3e}, Cohen's d = {d:.3f}")
     print()
     print("LaTeX-ready snippet:")
-    print(
-        f"  Apple M3: ${mean:.4f} \\pm {sd:.4f}$ J, 95\\% CI $[{ci_lo:.4f}, {ci_hi:.4f}]$ J, $n={n}$."
-    )
+    if runtime_json:
+        print(
+            f"  Apple M3: ${propagated_mean:.4f}$ J, delta-method 95\\% CI "
+            f"$[{propagated_lo:.4f}, {propagated_hi:.4f}]$ J, "
+            f"$n_P={n}$, $n_T={runtime_n}$."
+        )
+    else:
+        print(
+            f"  Apple M3: ${mean:.4f} \\pm {sd:.4f}$ J, "
+            f"95\\% CI $[{ci_lo:.4f}, {ci_hi:.4f}]$ J, $n={n}$."
+        )
     print(
         f"  Welch's $t({df:.1f})={t:.2f}$, $p{'<.001' if p < 0.001 else '='+format(p,'.3f')}$, $d={d:.2f}$."
     )

@@ -2,8 +2,8 @@
 ; Target: AMD Ryzen 7 running Linux
 ;
 ; Computes C = A × B for 256×256 integer matrices.
-; Demonstrates: x86 complex addressing modes, IMUL, memory operands,
-;               CISC-style instructions that combine load+compute.
+; The hot loop is deliberately normalized against matmul_arm.s: both execute
+; nine instructions per k iteration and carry one serial sum dependency.
 ;
 ; Build (Linux):
 ;   nasm -f elf64 -o matmul_x86.o matmul_x86.asm
@@ -48,11 +48,21 @@ matmul:
     push    r14
     push    r15
 
+    ; Keep all three loop-invariant bases resident for the whole function.
+    lea     rbx, [rel mat_C]
+    lea     rbp, [rel mat_B]
+
     xor     r12d, r12d              ; r12 = i = 0
 
 .loop_i:
     cmp     r12d, N
     jge     .done_i
+
+    ; r8 points at A[i][0].  One row is N * sizeof(int) = 1024 bytes.
+    mov     r8d, r12d
+    shl     r8, 10
+    lea     rax, [rel mat_A]
+    add     r8, rax
 
     xor     r13d, r13d              ; r13 = j = 0
 
@@ -63,37 +73,27 @@ matmul:
     xor     r15d, r15d              ; r15 = sum = 0
     xor     r14d, r14d              ; r14 = k = 0
 
+    ; r9 walks down B's j-th column, one 1024-byte row per iteration.
+    lea     r9, [rbp + r13*4]
+
 .loop_k:
     cmp     r14d, N
     jge     .done_k
 
-    ; Calculate A[i*N + k]
-    mov     eax, r12d
-    imul    eax, N                  ; eax = i * N
-    add     eax, r14d               ; eax = i * N + k
-    ; x86 can use complex addressing: load from [base + index*4]
-    lea     rbx, [rel mat_A]
-    mov     ecx, [rbx + rax*4]      ; ecx = A[i*N + k]
-
-    ; Calculate B[k*N + j]
-    mov     eax, r14d
-    imul    eax, N                  ; eax = k * N
-    add     eax, r13d               ; eax = k * N + j
-    lea     rbx, [rel mat_B]
-    ; x86 IMUL can multiply register by memory operand directly
-    imul    ecx, [rbx + rax*4]      ; ecx = A[i][k] * B[k][j]
-
+    mov     ecx, [r8 + r14*4]       ; ecx = A[i][k]
+    mov     edx, [r9]               ; edx = B[k][j]
+    imul    ecx, edx
     add     r15d, ecx               ; sum += product
 
+    add     r9, N * 4               ; advance to B[k+1][j]
     inc     r14d                    ; k++
     jmp     .loop_k
 
 .done_k:
     ; Store C[i*N + j] = sum
     mov     eax, r12d
-    imul    eax, N
+    shl     eax, 8                  ; i * N
     add     eax, r13d
-    lea     rbx, [rel mat_C]
     mov     [rbx + rax*4], r15d
 
     inc     r13d                    ; j++

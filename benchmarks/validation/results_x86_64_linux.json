@@ -1,0 +1,135 @@
+{
+  "platform": "x86_64-linux",
+  "source_files": [
+    "benchmarks/asm_x86_64/fib_x86.asm",
+    "benchmarks/asm_x86_64/matmul_x86.asm"
+  ],
+  "fibonacci": [
+    {
+      "n": 0,
+      "result": 0,
+      "status": "pass"
+    },
+    {
+      "n": 1,
+      "result": 1,
+      "status": "pass"
+    },
+    {
+      "n": 2,
+      "result": 1,
+      "status": "pass"
+    },
+    {
+      "n": 5,
+      "result": 5,
+      "status": "pass"
+    },
+    {
+      "n": 10,
+      "result": 55,
+      "status": "pass"
+    },
+    {
+      "n": 20,
+      "result": 6765,
+      "status": "pass"
+    },
+    {
+      "n": 30,
+      "result": 832040,
+      "status": "pass"
+    },
+    {
+      "n": 40,
+      "result": 102334155,
+      "status": "pass"
+    }
+  ],
+  "matrix": [
+    {
+      "dimension": 4,
+      "input_rule": "A[i]=B[i]=i mod 7",
+      "elements_compared": 16,
+      "status": "pass"
+    },
+    {
+      "dimension": 4,
+      "input_rule": "A[i]=B[i]=i mod 31",
+      "elements_compared": 16,
+      "status": "pass"
+    },
+    {
+      "dimension": 4,
+      "input_rule": "A[i]=B[i]=i mod 100",
+      "elements_compared": 16,
+      "status": "pass"
+    },
+    {
+      "dimension": 8,
+      "input_rule": "A[i]=B[i]=i mod 7",
+      "elements_compared": 64,
+      "status": "pass"
+    },
+    {
+      "dimension": 8,
+      "input_rule": "A[i]=B[i]=i mod 31",
+      "elements_compared": 64,
+      "status": "pass"
+    },
+    {
+      "dimension": 8,
+      "input_rule": "A[i]=B[i]=i mod 100",
+      "elements_compared": 64,
+      "status": "pass"
+    },
+    {
+      "dimension": 16,
+      "input_rule": "A[i]=B[i]=i mod 7",
+      "elements_compared": 256,
+      "status": "pass"
+    },
+    {
+      "dimension": 16,
+      "input_rule": "A[i]=B[i]=i mod 31",
+      "elements_compared": 256,
+      "status": "pass"
+    },
+    {
+      "dimension": 16,
+      "input_rule": "A[i]=B[i]=i mod 100",
+      "elements_compared": 256,
+      "status": "pass"
+    },
+    {
+      "dimension": 32,
+      "input_rule": "A[i]=B[i]=i mod 7",
+      "elements_compared": 1024,
+      "status": "pass"
+    },
+    {
+      "dimension": 32,
+      "input_rule": "A[i]=B[i]=i mod 31",
+      "elements_compared": 1024,
+      "status": "pass"
+    },
+    {
+      "dimension": 32,
+      "input_rule": "A[i]=B[i]=i mod 100",
+      "elements_compared": 1024,
+      "status": "pass"
+    },
+    {
+      "dimension": 256,
+      "input_rule": "A[i]=B[i]=i mod 100",
+      "elements_compared": 65536,
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "fibonacci_cases": 8,
+    "matrix_cases": 13,
+    "matrix_elements_compared": 69616,
+    "status": "pass"
+  }
+}

@@ -115,10 +115,6 @@ echo "=== System preparation ==="
 echo "Setting CPU governor to 'performance'..."
 sudo cpupower frequency-set -g performance 2>/dev/null || \
     echo "  (Could not set governor — run with sudo or set manually)"
-
-echo "Disabling turbo boost..."
-echo 0 | sudo tee /sys/devices/system/cpu/cpufreq/boost 2>/dev/null || \
-    echo "  (Could not disable boost)"
 echo ""
 
 # ---- Run ----
@@ -143,4 +139,3 @@ echo ""
 # ---- Restore system ----
 echo "Restoring CPU governor..."
 sudo cpupower frequency-set -g schedutil 2>/dev/null
-echo 1 | sudo tee /sys/devices/system/cpu/cpufreq/boost 2>/dev/null
