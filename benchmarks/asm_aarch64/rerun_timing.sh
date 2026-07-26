@@ -66,7 +66,7 @@ MATMUL_MEAN=$(python3 -c "import json; print(json.load(open('$OUTDIR/matmul_arm.
 {
     echo "M3 timing re-run - $TS"
     echo "======================================"
-    echo "Preconditions verified: AC power, Low Power Mode off (see"
+    echo "Preconditions verified: battery power, Low Power Mode off (see"
     echo "check_measurement_conditions.sh output printed above)."
     echo ""
     echo "fib(40)    mean runtime (s): $FIB_MEAN"

@@ -132,11 +132,11 @@ def make_runtime():
                 "fib(40)",
                 "Time (ms)",
                 330.7,
-                474.8,
+                475.9,
                 650,
                 [0, 150, 300, 450, 600],
                 apple_err=(327.7, 333.6),
-                ryzen_err=(473.957, 475.643),
+                ryzen_err=(475.0, 476.8),
                 value_fmt="{:.1f}",
             ),
             panel_bars(
@@ -147,11 +147,11 @@ def make_runtime():
                 "matmul 256x256",
                 "Time (ms)",
                 16.1,
-                26.4,
+                26.3,
                 32,
                 [0, 8, 16, 24, 32],
                 apple_err=(15.5, 16.6),
-                ryzen_err=(25.538, 27.262),
+                ryzen_err=(25.43, 27.17),
                 value_fmt="{:.1f}",
             ),
             text(width / 2, 455, "Error bars show 95% confidence intervals over 100 measured runs.", "note"),
@@ -173,12 +173,12 @@ def make_energy():
                 345,
                 "fib(40)",
                 "Energy (J)",
-                1.431,
-                3.05,
+                1.407,
+                3.04,
                 3.5,
                 [0, 1, 2, 3],
-                apple_err=(1.418, 1.444),
-                ryzen_err=(2.90, 3.20),
+                apple_err=(1.356, 1.458),
+                ryzen_err=(2.89, 3.19),
                 value_fmt="{:.3g}",
             ),
             panel_bars(
@@ -188,15 +188,15 @@ def make_energy():
                 345,
                 "matmul 256x256",
                 "Energy (J)",
-                0.0846,
-                0.18,
+                0.0839,
+                0.179,
                 0.21,
                 [0, 0.05, 0.10, 0.15, 0.20],
-                apple_err=(0.0814, 0.0877),
-                ryzen_err=(0.177, 0.183),
+                apple_err=(0.0806, 0.0873),
+                ryzen_err=(0.176, 0.182),
                 value_fmt="{:.3g}",
             ),
-            text(width / 2, 455, "Apple CIs propagate uncertainty from 24 power windows and 100 timing runs; Ryzen CIs use 100 per-run counter readings. CI widths are not directly comparable.", "note"),
+            text(width / 2, 455, "Apple CIs propagate uncertainty from 25 power windows and 100 timing runs; Ryzen CIs use 100 per-run counter readings. CI widths are not directly comparable.", "note"),
         ]
     )
     (OUT_DIR / "energy_per_run.svg").write_text(svg_doc(width, height, body), encoding="utf-8")
@@ -205,7 +205,7 @@ def make_energy():
 def make_tradeoff():
     # Both axes are log-scaled: runtime and energy each span roughly one and
     # a half orders of magnitude between the two benchmarks, and the energy
-    # values in particular (0.137-3.05 J) are too close together on a linear
+    # values in particular (0.084-3.04 J) are too close together on a linear
     # scale for the matmul Apple/Ryzen points to stay visually distinct.
     width, height = 780, 520
     left, right, top, bottom = 85, 735, 70, 455
@@ -220,10 +220,10 @@ def make_tradeoff():
         return bottom - (math.log10(v) - math.log10(y_min)) / (math.log10(y_max) - math.log10(y_min)) * plot_h
 
     points = [
-        ("fib Apple", 330.7, 1.431, APPLE, -62, -14),
-        ("fib Ryzen", 474.8, 3.05, RYZEN, -78, 20),
-        ("matmul Apple", 16.1, 0.0846, APPLE, -18, 16),
-        ("matmul Ryzen", 26.4, 0.18, RYZEN, 18, -12),
+        ("fib Apple", 330.7, 1.407, APPLE, -62, -14),
+        ("fib Ryzen", 475.9, 3.04, RYZEN, -78, 20),
+        ("matmul Apple", 16.1, 0.0839, APPLE, -18, 16),
+        ("matmul Ryzen", 26.3, 0.179, RYZEN, 18, -12),
     ]
     parts = [
         text(width / 2, 32, "Runtime-Energy Tradeoff (log-log)", "title"),

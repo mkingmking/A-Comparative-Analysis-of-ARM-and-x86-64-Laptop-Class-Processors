@@ -1,6 +1,6 @@
 M3 timing re-run - 20260722_223106
 ======================================
-Preconditions verified: AC power, Low Power Mode off (see
+Preconditions verified: battery power, Low Power Mode off (see
 check_measurement_conditions.sh output printed above).
 
 fib(40)    mean runtime (s): 0.3306830396300002

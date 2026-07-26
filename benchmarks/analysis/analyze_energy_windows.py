@@ -1,27 +1,22 @@
 #!/usr/bin/env python3
 """Analyze repeated-window Apple energy samples from
 measure_power_mac_repeated.sh, and compare against the existing Ryzen
-package-energy measurements (results/linux_energy.txt) with a real
+package-energy measurements (results/results_linux_new.txt) with a real
 two-sample Welch's t-test -- the statistical test that was previously
 impossible because the Apple side had no repeated-run variance.
 
 Usage:
     python3 analyze_energy_windows.py <csv_file> <fib|matmul> [--skip-warmup N]
-        [--no-outlier-filter] [--runtime-json PATH]
+        [--runtime-json PATH]
+
+Every recorded window is used as measured. The only window a run discards is
+an explicit --skip-warmup, a fixed protocol step applied by position.
 
 --skip-warmup N (default 0): discard the first N windows before computing
 statistics. measure_power_mac_repeated.sh now runs and discards its own
 warm-up window before recording any of the N requested windows, so CSVs it
 produces need no further skipping. CSVs collected before that fix (window 1
 still present as the first data row) need --skip-warmup 1.
-
-Outlier filter (on by default): after any --skip-warmup, a window is
-flagged and excluded if its idle power exceeds max(3x the run's median idle
-power, 0.15 W), or if its delta (load - idle) is negative. This is a
-recurring, real contamination signature -- background CPU activity spiking
-during the idle phase of one window -- seen even after the pre-flight
-stray-process check was added, roughly 1-3 windows per 25 in practice. Pass
---no-outlier-filter to disable it and use every window as recorded.
 
 --runtime-json PATH: read a hyperfine JSON result and additionally report a
 delta-method confidence interval for mean energy that propagates uncertainty
@@ -31,7 +26,7 @@ Columns are read positionally (window, idle, load, delta, ..., energy=last
 column), not by header name, so this works whether or not a given CSV
 includes the retired mean_runtime_s column.
 
-Ryzen reference stats (from results/linux_energy.txt / Table tab:energy in
+Ryzen reference stats (from results/results_linux_new.txt / Table tab:energy in
 the paper) are hardcoded below per benchmark: mean package energy (J) and
 the relative standard error (%) reported by `perf stat -r 100`, n=100.
 """
@@ -42,8 +37,8 @@ import statistics
 import sys
 
 RYZEN_REF = {
-    "fib":    {"mean_j": 3.05, "relse_pct": 2.53, "n": 100},
-    "matmul": {"mean_j": 0.18, "relse_pct": 0.78, "n": 100},
+    "fib":    {"mean_j": 3.04, "relse_pct": 2.52, "n": 100},
+    "matmul": {"mean_j": 0.179, "relse_pct": 0.77, "n": 100},
 }
 
 
@@ -146,30 +141,11 @@ def load_windows(csv_path):
     return rows
 
 
-def filter_outliers(rows):
-    """Flags a window as contaminated if its idle power is a large spike
-    relative to the run's median idle, or if delta went negative (load
-    measured lower than idle, physically impossible for a real load)."""
-    idles = [r[1] for r in rows]
-    median_idle = statistics.median(idles)
-    threshold = max(3 * median_idle, 0.15)
-    kept, dropped = [], []
-    for r in rows:
-        _, idle_w, _, delta_w, _ = r
-        if idle_w > threshold or delta_w < 0:
-            dropped.append(r)
-        else:
-            kept.append(r)
-    return kept, dropped, median_idle
-
-
 def parse_args(argv):
     """Manual parser: two required positionals (csv_path, bench), plus
-    optional --skip-warmup N, --no-outlier-filter, and
-    --runtime-json PATH in any order."""
+    optional --skip-warmup N and --runtime-json PATH in any order."""
     positional = []
     skip = 0
-    no_filter = False
     runtime_json = None
     i = 0
     while i < len(argv):
@@ -179,9 +155,6 @@ def parse_args(argv):
                 return None
             skip = int(argv[i + 1])
             i += 2
-        elif arg == "--no-outlier-filter":
-            no_filter = True
-            i += 1
         elif arg == "--runtime-json":
             if i + 1 >= len(argv):
                 return None
@@ -194,7 +167,7 @@ def parse_args(argv):
             i += 1
     if len(positional) != 2 or positional[1] not in RYZEN_REF:
         return None
-    return positional[0], positional[1], skip, no_filter, runtime_json
+    return positional[0], positional[1], skip, runtime_json
 
 
 def main():
@@ -202,32 +175,20 @@ def main():
     if parsed is None:
         print(
             f"Usage: {sys.argv[0]} <csv_file> <fib|matmul> "
-            "[--skip-warmup N] [--no-outlier-filter] [--runtime-json PATH]"
+            "[--skip-warmup N] [--runtime-json PATH]"
         )
         sys.exit(1)
-    csv_path, bench, skip, no_filter, runtime_json = parsed
+    csv_path, bench, skip, runtime_json = parsed
 
     all_rows = load_windows(csv_path)
-    warmup, rows = all_rows[:skip], all_rows[skip:]
+    warmup, kept = all_rows[:skip], all_rows[skip:]
     if warmup:
         print(f"Discarded {len(warmup)} warm-up window(s): {[('%.4f J' % r[4]) for r in warmup]}")
-
-    if no_filter:
-        kept, dropped, median_idle = rows, [], statistics.median(r[1] for r in rows) if rows else 0.0
-    else:
-        kept, dropped, median_idle = filter_outliers(rows)
-        if dropped:
-            print(
-                f"Outlier filter (median idle={median_idle:.4f} W, threshold={max(3*median_idle, 0.15):.4f} W): "
-                f"dropped window(s) {[r[0] for r in dropped]}"
-            )
-            for r in dropped:
-                print(f"    window {r[0]}: idle={r[1]:.4f}W load={r[2]:.4f}W delta={r[3]:.4f}W energy={r[4]:.4f}J")
 
     energies = [r[4] for r in kept]
     n = len(energies)
     if n < 3:
-        print(f"Only {n} window(s) left in {csv_path} after skip/filter -- need at least a few to compute sd/CI.")
+        print(f"Only {n} window(s) left in {csv_path} after warm-up skip -- need at least a few to compute sd/CI.")
         sys.exit(1)
 
     mean = statistics.mean(energies)
@@ -238,7 +199,7 @@ def main():
     cv_pct = 100 * sd / mean
 
     print(f"=== Apple M3 repeated-window energy: {bench} ===")
-    print(f"  windows (n)        : {n}  ({len(dropped)} dropped as outliers, {len(warmup)} warm-up)")
+    print(f"  windows (n)        : {n}  (all recorded windows used, {len(warmup)} warm-up discarded)")
     print(f"  mean energy        : {mean:.4f} J")
     print(f"  sample sd          : {sd:.4f} J")
     print(f"  CV                 : {cv_pct:.2f}%")
@@ -280,7 +241,7 @@ def main():
     ryzen_sem = ryzen_mean * ref["relse_pct"] / 100
     ryzen_sd = ryzen_sem * math.sqrt(ryzen_n)
 
-    print(f"=== Ryzen reference (from results/linux_energy.txt): {bench} ===")
+    print(f"=== Ryzen reference (from results/results_linux_new.txt): {bench} ===")
     print(f"  n                  : {ryzen_n}")
     print(f"  mean energy        : {ryzen_mean:.4f} J")
     print(f"  implied sd         : {ryzen_sd:.4f} J  (from {ref['relse_pct']}% relative std. error)")

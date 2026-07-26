@@ -41,12 +41,12 @@
 <text x="390.0" y="495.0" class="axis" text-anchor="middle">Execution time (ms, log scale)</text>
 <text x="24.0" y="262.5" class="axis" text-anchor="middle" transform="rotate(-90 24.0 262.5)">Energy per run (J, log scale)</text>
 <text x="729.0" y="85.0" class="note" text-anchor="end">Lower-left is better</text>
-<circle cx="620.3" cy="160.3" r="7" fill="#00796B" stroke="#111" stroke-width="1"/>
-<text x="558.3" y="146.3" class="label" text-anchor="end">fib Apple</text>
-<circle cx="675.6" cy="93.8" r="7" fill="#D55E00" stroke="#111" stroke-width="1"/>
-<text x="597.6" y="113.8" class="label" text-anchor="end">fib Ryzen</text>
-<circle cx="157.9" cy="408.8" r="7" fill="#00796B" stroke="#111" stroke-width="1"/>
-<text x="139.9" y="424.8" class="label" text-anchor="end">matmul Apple</text>
-<circle cx="233.5" cy="342.5" r="7" fill="#D55E00" stroke="#111" stroke-width="1"/>
-<text x="251.5" y="330.5" class="label" text-anchor="start">matmul Ryzen</text>
+<circle cx="620.3" cy="161.8" r="7" fill="#00796B" stroke="#111" stroke-width="1"/>
+<text x="558.3" y="147.8" class="label" text-anchor="end">fib Apple</text>
+<circle cx="676.0" cy="94.1" r="7" fill="#D55E00" stroke="#111" stroke-width="1"/>
+<text x="598.0" y="114.1" class="label" text-anchor="end">fib Ryzen</text>
+<circle cx="157.9" cy="409.5" r="7" fill="#00796B" stroke="#111" stroke-width="1"/>
+<text x="139.9" y="425.5" class="label" text-anchor="end">matmul Apple</text>
+<circle cx="232.9" cy="342.9" r="7" fill="#D55E00" stroke="#111" stroke-width="1"/>
+<text x="250.9" y="330.9" class="label" text-anchor="start">matmul Ryzen</text>
 </svg>
