@@ -2,7 +2,7 @@
 # rerun_timing.sh - clean re-run of the M3 wall-clock timing protocol
 #
 # Rebuilds fib_arm/matmul_arm from source and re-runs the exact protocol
-# already reported in results/results_mac.txt (hyperfine, 5 warm-up runs,
+# already reported in results/apple_m3/superseded_session/results.txt (hyperfine, 5 warm-up runs,
 # 100 measured runs), gated on check_measurement_conditions.sh so this can't
 # repeat the Low-Power-Mode contamination found in the original session.
 #
@@ -10,9 +10,9 @@
 #   ./rerun_timing.sh
 #
 # Output:
-#   results/rerun_<timestamp>/fib_arm.json, fib_arm.csv
-#   results/rerun_<timestamp>/matmul_arm.json, matmul_arm.csv
-#   results/rerun_<timestamp>/summary.txt
+#   results/apple_m3/timing_rerun_<timestamp>/fib_arm.json, fib_arm.csv
+#   results/apple_m3/timing_rerun_<timestamp>/matmul_arm.json, matmul_arm.csv
+#   results/apple_m3/timing_rerun_<timestamp>/summary.txt
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ rm -f fib_arm.o matmul_arm.o
 echo "Rebuilt fib_arm and matmul_arm."
 
 TS=$(date +%Y%m%d_%H%M%S)
-OUTDIR="$REPO_ROOT/results/rerun_$TS"
+OUTDIR="$REPO_ROOT/results/apple_m3/timing_rerun_$TS"
 mkdir -p "$OUTDIR"
 
 echo ""
@@ -73,10 +73,10 @@ MATMUL_MEAN=$(python3 -c "import json; print(json.load(open('$OUTDIR/matmul_arm.
     echo "matmul     mean runtime (s): $MATMUL_MEAN"
     echo ""
     echo "Compare against the original (possibly throttled) session:"
-    echo "  fib(40)    583.6 ms  (results/results_mac.txt)"
-    echo "  matmul      26.0 ms  (results/results_mac.txt)"
+    echo "  fib(40)    583.6 ms  (results/apple_m3/superseded_session/results.txt)"
+    echo "  matmul      26.0 ms  (results/apple_m3/superseded_session/results.txt)"
     echo ""
-    echo "Compare against Ryzen (results/linux_timing.txt):"
+    echo "Compare against Ryzen (results/ryzen7_3750h/timing.txt):"
     echo "  fib(40)    474.8 ms"
     echo "  matmul      26.4 ms"
     echo ""

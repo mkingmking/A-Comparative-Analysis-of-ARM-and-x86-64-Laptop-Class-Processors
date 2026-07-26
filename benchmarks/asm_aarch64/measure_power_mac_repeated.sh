@@ -22,7 +22,7 @@
 # MEAN_RUNTIME_S is a single fixed value you pass in: the mean runtime from
 # a same-session, same-power-conditions 100-run hyperfine timing experiment
 # (see rerun_timing.sh, which produces this number directly -- do not reuse
-# the old 0.5836 s / 0.0260 s values from results/results_mac.txt, which
+# the old 0.5836 s / 0.0260 s values from results/apple_m3/superseded_session/results.txt, which
 # came from a session later found to plausibly have run under Low Power
 # Mode). Only the power measurement varies window-to-window.
 # This isolates exactly the missing piece -- power-measurement repeatability

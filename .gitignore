@@ -1,110 +1,73 @@
-# Prerequisites
-*.d
-
-# Object files
+# ---------------------------------------------------------------------------
+# Compiler and linker artifacts
+# ---------------------------------------------------------------------------
 *.o
-*.ko
 *.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
+*.d
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
 *.dSYM/
-*.su
-*.idb
-*.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# debug information files
-*.dwo
-
-# Assembly source files
-*.s
-*.S
-!benchmarks/asm_aarch64/fib_arm.s
-!benchmarks/asm_aarch64/matmul_arm.s
-!benchmarks/asm_aarch64/fib_arm_profile.s
-!benchmarks/asm_aarch64/matmul_arm_profile.s
-
-# Article / paper sources and LaTeX build artifacts
-*.tex
-*.bib
-*.pdf
-*.aux
-*.log
-*.out
-*.toc
-*.lof
-*.lot
-*.fls
-*.fdb_latexmk
-*.synctex.gz
-*.blg
-*.bbl
-*.bcf
-*.run.xml
-*.nav
-*.snm
-*.vrb
-*.idx
-*.ind
-*.ilg
-*.glg
-*.glo
-*.gls
-*.acn
-*.acr
-*.alg
-*.xdv
-
-# Compiled binaries (no extension — built from asm/C sources)
+# Benchmark binaries — rebuilt from source via benchmarks/scripts/
 benchmarks/asm_aarch64/fib_arm
 benchmarks/asm_aarch64/matmul_arm
+benchmarks/asm_aarch64/fib_arm_profile
+benchmarks/asm_aarch64/matmul_arm_profile
 benchmarks/c_portable/fib_O0
 benchmarks/c_portable/fib_O2
 benchmarks/c_portable/matmul_c_O0
 benchmarks/c_portable/matmul_c_O2
+benchmarks/c_portable/fib_profile_O0
+benchmarks/c_portable/fib_profile_O2
+benchmarks/c_portable/matmul_profile_O0
+benchmarks/c_portable/matmul_profile_O2
 
+# Binaries and scratch output written into the working directory by run_mac.sh
+# and run_linux.sh
+fib_asm
+matmul_asm
+fib_c_O[02]
+matmul_c_O[02]
+results_mac.csv
+results_linux.csv
+perf_results.csv
 
-# macOS metadata
-.DS_Store
-tcsa.cls
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
 
-experiments/
+# ---------------------------------------------------------------------------
+# Manuscript working copy — the article sources are maintained outside this
+# artifact repository
+# ---------------------------------------------------------------------------
 paper/
+experiments/
+
+# ---------------------------------------------------------------------------
+# Private measurement runbooks — step-by-step walkthroughs of the manual
+# Instruments GUI procedures, kept as local working notes rather than published
+# artifacts. These contain no code the published scripts do not already provide.
+# ---------------------------------------------------------------------------
+benchmarks/asm_aarch64/run_instruments_asm_profile.sh
+benchmarks/c_portable/rerun_instruments_profile.sh
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.log
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+
+# ---------------------------------------------------------------------------
+# OS metadata
+# ---------------------------------------------------------------------------
+.DS_Store

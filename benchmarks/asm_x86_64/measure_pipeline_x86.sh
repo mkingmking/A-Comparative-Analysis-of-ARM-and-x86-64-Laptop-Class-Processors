@@ -23,7 +23,7 @@
 #   ./measure_pipeline_x86.sh
 #
 # Requires: nasm, gcc, linux-tools (perf) matching the running kernel.
-# Output: results/pipeline_x86_<timestamp>/fib_x86.txt, matmul_x86.txt
+# Output: results/ryzen7_3750h/pipeline_<timestamp>/fib_x86.txt, matmul_x86.txt
 
 set -euo pipefail
 
@@ -46,7 +46,7 @@ echo "=== Sanity check: correctness ==="
 ./matmul_x86
 
 TS=$(date +%Y%m%d_%H%M%S)
-OUTDIR="$REPO_ROOT/results/pipeline_x86_$TS"
+OUTDIR="$REPO_ROOT/results/ryzen7_3750h/pipeline_$TS"
 mkdir -p "$OUTDIR"
 
 echo ""
@@ -65,7 +65,7 @@ echo ""
 echo "perf's own -r N report already derives 'insn per cycle' (IPC) and"
 echo "'% of all branches' (branch miss rate) when both counters in a pair"
 echo "are present -- no separate parsing step needed, same as the numbers"
-echo "already used for results/linux_energy.txt."
+echo "already used for results/ryzen7_3750h/energy.txt."
 echo ""
 echo "If L1-dcache-loads / L1-dcache-load-misses show <not supported> on"
 echo "this kernel/PMU, run 'perf list' for the closest available AMD raw"

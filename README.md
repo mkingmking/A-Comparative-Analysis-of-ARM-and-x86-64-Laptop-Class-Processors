@@ -28,27 +28,35 @@ The results are interpreted as a platform-level comparison, not as a pure ISA-on
 
 ```text
 .
-|-- benchmarks/
-|   |-- asm_aarch64/           # Apple Silicon / AArch64 assembly benchmarks
-|   |-- asm_x86_64/            # x86-64 assembly benchmarks
-|   |-- c_portable/            # Portable C profiling versions
-|   `-- scripts/               # Benchmark helper scripts
-|   |-- validation/            # Functional-equivalence validation runner + reports
-|   `-- analysis/              # Energy-window analysis, bias sensitivity, compiler-baseline audit
-|-- figures/
-|   |-- generate_figures.py    # Figure generator
-|   `-- *.png, *.svg           # Article figures
-|-- results/                   # Timing, energy, and PMU measurement artifacts
-`-- benchmark_ci_check.py      # Parser/checker for timing and energy summaries
+├── benchmarks/
+│   ├── asm_aarch64/          # Apple Silicon / AArch64 assembly kernels + measurement scripts
+│   ├── asm_x86_64/           # x86-64 assembly kernels + measurement scripts
+│   ├── c_portable/           # Portable C benchmarks and PMU profiling variants
+│   ├── scripts/              # Build, run, and precondition-check scripts
+│   ├── validation/           # Functional-equivalence runner + machine-readable reports
+│   └── analysis/             # Energy-window analysis, confidence intervals, bias
+│                             #   sensitivity, compiler-baseline audit
+├── figures/
+│   ├── generate_figures.py   # Figure generator
+│   └── *.pdf, *.png, *.svg   # Generated figures
+└── results/                  # Measurement artifacts — see results/README.md
+    ├── apple_m3/             # Apple M3 timing, energy, and PMU data
+    ├── ryzen7_3750h/         # AMD Ryzen 7 3750H timing and energy data
+    └── cross_platform_summary.txt
 ```
 
-## Regenerating Figures
+Binaries are not committed; they are rebuilt from source with the scripts under
+`benchmarks/scripts/`.
 
-Regenerate article figures if needed:
+## Regenerating Figures
 
 ```bash
 python3 figures/generate_figures.py
 ```
+
+This writes `runtime_comparison`, `energy_per_run`, and `runtime_energy_tradeoff`
+in PDF, PNG, and SVG. The article includes the runtime comparison and the
+runtime-energy tradeoff; `energy_per_run` is supplementary.
 
 ## Reproducing the Benchmarks
 
@@ -76,15 +84,32 @@ Linux energy measurements use `perf` package-energy counters and may require adm
 
 ## Measurement Artifacts
 
-Result summaries are under `results/`:
+All measurement data is under `results/`, grouped by platform.
+**[`results/README.md`](results/README.md) is the provenance map** — it records
+which artifact backs which reported number and which material is superseded.
 
-- `results/results_mac.txt` (and `macos_timing.txt`, `macos_power.txt`, `summary.txt`): the original Apple M3 timing/power session. This session is superseded — it was later found to be affected by Low Power Mode and is kept only for comparison, not as the article's reported numbers.
-- `results/rerun_20260722_223106/`: the corrected Apple M3 timing re-run (`hyperfine`, 5 warm-up + 100 measured runs) behind the runtime figures reported in the article.
-- `benchmarks/asm_aarch64/energy_windows_fib_arm_20260722.csv` and `energy_windows_matmul_arm_20260722.csv`: the 25 Apple M3 `powermetrics` power-sampling windows per benchmark, at the corrected mean runtime; run through `benchmarks/analysis/analyze_energy_windows.py` (which uses every recorded window) to reproduce the article's energy statistics.
-- `results/results_linux_new.txt` (and `linux_energy_new.txt`, `linux_timing_new.txt`): `perf stat` package-energy results and `hyperfine` timing results for the Ryzen 7 3750H, unaffected by the Apple-side correction.
-- `results/trace_summaries/` (original Apple Instruments CPU Counters capture): superseded. `results/fib_mac_rerun.trace` and `results/matmul_mac_rerun.trace` are the rerun captures behind the article's reported Apple PMU/IPC statistics. Both captures are affected by an Instruments-tooling limitation documented in `benchmarks/c_portable/diagnose_profile_clock.sh`: the traced process is scheduled onto efficiency cores (Fibonacci) or otherwise subject to counter-sampling overhead (matrix multiplication), which suppresses the implied instructions/s and clock-rate figures well below the platform's true operating frequency (confirmed separately via direct `powermetrics` sampling in `powermetrics_*_direct_*.txt`). IPC is stable and reliable across both captures; instructions/s and implied GHz should be read as characterizing the instrumented run, not full-speed execution.
+| Path | Contents |
+| --- | --- |
+| `results/apple_m3/timing_rerun_20260722/` | Apple M3 timing behind the reported runtimes (`hyperfine`, 5 warm-up + 100 measured runs) |
+| `results/apple_m3/energy_windows_*.csv` | The 25 `powermetrics` power-sampling windows per benchmark behind the reported energy |
+| `results/apple_m3/pmu_*_rerun.trace` | Instruments CPU Counters captures behind the reported Apple PMU/IPC values |
+| `results/apple_m3/pmu_trace_summaries/` | Text summaries of the superseded original PMU capture |
+| `results/apple_m3/superseded_session/` | The original Apple session, later found to have run under Low Power Mode |
+| `results/ryzen7_3750h/` | Ryzen timing (`hyperfine`) and package energy (`perf stat`) |
+| `results/cross_platform_summary.txt` | Side-by-side summary using the corrected Apple numbers |
 
-The generated figures in `figures/` visualize runtime, energy per run, and the runtime-energy tradeoff reported in the article.
+To reproduce the reported energy statistics from the raw sampling windows:
+
+```bash
+python3 benchmarks/analysis/analyze_energy_windows.py \
+    results/apple_m3/energy_windows_fib.csv fib
+```
+
+Two caveats are documented in full in `results/README.md`: the Apple session in
+`superseded_session/` is kept only for the before/after comparison and is not the
+article's reported data, and the Instruments captures under-report clock rate for
+the reasons set out in `benchmarks/c_portable/diagnose_profile_clock.sh` (IPC is
+reliable; instructions/s and implied GHz characterize the instrumented run).
 
 ## Functional Validation
 

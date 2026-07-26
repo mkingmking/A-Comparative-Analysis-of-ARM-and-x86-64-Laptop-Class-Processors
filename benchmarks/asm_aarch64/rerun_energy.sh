@@ -10,7 +10,7 @@
 #   sudo ./rerun_energy.sh <fib_arm|matmul_arm> <mean_runtime_s> [N=25]
 #
 # mean_runtime_s should come from the fresh hyperfine numbers in
-# rerun_timing.sh's output (results/rerun_<timestamp>/summary.txt), NOT the
+# rerun_timing.sh's output (results/apple_m3/timing_rerun_<timestamp>/summary.txt), NOT the
 # old 0.5836 / 0.0260 values -- those were from the same session suspected
 # of running under Low Power Mode.
 #
@@ -38,7 +38,7 @@ case "$BASE" in
 esac
 
 TS=$(date +%Y%m%d_%H%M%S)
-CSV="$SCRIPT_DIR/energy_windows_${BASE}_${TS}.csv"
+CSV="$REPO_ROOT/results/apple_m3/energy_windows_${BASE}_${TS}.csv"
 
 "$SCRIPT_DIR/measure_power_mac_repeated.sh" "$BENCHMARK" "$MEAN_RUNTIME_S" "$N" "$CSV"
 

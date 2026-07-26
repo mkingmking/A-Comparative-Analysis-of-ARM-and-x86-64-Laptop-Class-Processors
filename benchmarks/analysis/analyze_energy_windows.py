@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Analyze repeated-window Apple energy samples from
 measure_power_mac_repeated.sh, and compare against the existing Ryzen
-package-energy measurements (results/results_linux_new.txt) with a real
+package-energy measurements (results/ryzen7_3750h/results.txt) with a real
 two-sample Welch's t-test -- the statistical test that was previously
 impossible because the Apple side had no repeated-run variance.
 
@@ -26,7 +26,7 @@ Columns are read positionally (window, idle, load, delta, ..., energy=last
 column), not by header name, so this works whether or not a given CSV
 includes the retired mean_runtime_s column.
 
-Ryzen reference stats (from results/results_linux_new.txt / Table tab:energy in
+Ryzen reference stats (from results/ryzen7_3750h/results.txt / Table tab:energy in
 the paper) are hardcoded below per benchmark: mean package energy (J) and
 the relative standard error (%) reported by `perf stat -r 100`, n=100.
 """
@@ -241,7 +241,7 @@ def main():
     ryzen_sem = ryzen_mean * ref["relse_pct"] / 100
     ryzen_sd = ryzen_sem * math.sqrt(ryzen_n)
 
-    print(f"=== Ryzen reference (from results/results_linux_new.txt): {bench} ===")
+    print(f"=== Ryzen reference (from results/ryzen7_3750h/results.txt): {bench} ===")
     print(f"  n                  : {ryzen_n}")
     print(f"  mean energy        : {ryzen_mean:.4f} J")
     print(f"  implied sd         : {ryzen_sd:.4f} J  (from {ref['relse_pct']}% relative std. error)")

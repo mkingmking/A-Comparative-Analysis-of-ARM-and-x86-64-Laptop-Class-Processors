@@ -98,7 +98,6 @@ gcc -O0 -o fib_c_O0 c_portable/fib.c -lm 2>/dev/null
 gcc -O2 -o fib_c_O2 c_portable/fib.c -lm 2>/dev/null
 gcc -O0 -o matmul_c_O0 c_portable/matmul.c -lm 2>/dev/null
 gcc -O2 -o matmul_c_O2 c_portable/matmul.c -lm 2>/dev/null
-gcc -O2 -o memwalk c_portable/memwalk.c -lm 2>/dev/null
 
 # Assembly versions
 nasm -f elf64 -o fib_x86.o asm_x86_64/fib_x86.asm 2>/dev/null && \
@@ -128,8 +127,6 @@ echo ""
 [ -f ./matmul_c_O0 ] && run_benchmark "matmul_c_O0" "./matmul_c_O0"
 [ -f ./matmul_c_O2 ] && run_benchmark "matmul_c_O2" "./matmul_c_O2"
 [ -f ./matmul_asm ]  && run_benchmark "matmul_asm"   "./matmul_asm"
-
-[ -f ./memwalk ]     && run_benchmark "memwalk" "./memwalk"
 
 echo "=== All benchmarks complete ==="
 echo "Timing results:   $RESULTS"
