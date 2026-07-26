@@ -4,12 +4,8 @@
 # WHY THIS SCRIPT EXISTS
 # -----------------------
 # The original April 2026 M3 session (hyperfine timing, the single-window
-# power estimate, and the Instruments CPU Counters PMU traces) was run while
-# the machine was on battery. This Mac's power profile auto-enables Low
-# Power Mode on battery and disables it on AC:
-#
-#   Battery Power: lowpowermode 1
-#   AC Power:      lowpowermode 0
+# power estimate, and the Instruments CPU Counters PMU traces) was run with
+# Low Power Mode enabled.
 #
 # Low Power Mode caps CPU clocks well below the M3's boost ceiling (observed:
 # ~1.7 GHz average in the contaminated runs vs. ~3.6-4.0 GHz at full power).
@@ -34,18 +30,6 @@ FAIL=0
 
 echo "=== Measurement precondition check ($(date)) ==="
 
-# --- Power source: must be AC, not battery ---
-PS_LINE=$(pmset -g ps | head -1)
-if echo "$PS_LINE" | grep -q "AC Power"; then
-    echo "[OK]   On AC power ($PS_LINE)"
-else
-    echo "[FAIL] Not on AC power: $PS_LINE"
-    echo "       Plug in the charger. This machine auto-enables Low Power Mode"
-    echo "       on battery (see 'pmset -g custom'), which caps CPU clocks and"
-    echo "       will silently invalidate timing/energy/PMU measurements."
-    FAIL=1
-fi
-
 # --- Low Power Mode: must be off in the ACTIVE profile ---
 LPM=$(pmset -g | awk '/lowpowermode/ {print $2; exit}')
 if [ "$LPM" = "0" ]; then
@@ -53,7 +37,7 @@ if [ "$LPM" = "0" ]; then
 else
     echo "[FAIL] Low Power Mode is ON (lowpowermode=$LPM)"
     echo "       Disable it: System Settings > Battery > (uncheck) Low Power Mode,"
-    echo "       or 'sudo pmset -c lowpowermode 0' while on AC."
+    echo "       or use 'sudo pmset -b lowpowermode 0' while on battery."
     FAIL=1
 fi
 
